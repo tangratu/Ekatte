@@ -39,7 +39,7 @@ namespace Ekatte
             //Свързване с базата данни
             MySqlConnection con = new MySqlConnection("Data Source=localhost;Database=ekatte;User ID=root;Password=Tangratu");
             con.Open();
-            using (StreamReader s = new StreamReader("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\ekatte_obl.csv", Encoding.GetEncoding(1251)))
+            using (StreamReader s = new StreamReader("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\Ek_obl.csv", Encoding.GetEncoding(1251)))
             { 
                 string check = "SELECT COUNT(*) FROM oblast";
                 //Проверка за вече съществуващи данни
@@ -47,7 +47,7 @@ namespace Ekatte
                 //Броят записи в БД
                 int lines = int.Parse(ch.ExecuteScalar().ToString());
                 //Ако броят записи е еднакъв във файла и БД значи всичко е записано и трябва да записва отново
-                if (lines != getrealcount("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\ekatte_obl.csv"))
+                if (lines != getrealcount("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\Ek_obl.csv"))
                 {
 
                     if(lines > 0)
@@ -65,7 +65,7 @@ namespace Ekatte
                         inp = s.ReadLine();
                         var temp = inp.Split(';');
                         tag = temp[0];
-                        name = temp[1];
+                        name = temp[2];
                         //Записва стойности в БД
                         string ins_qry =
                             "INSERT INTO oblast (tag,name) VALUES (@tag,@name)";
@@ -102,7 +102,7 @@ namespace Ekatte
                         inp = s.ReadLine();
                         var temp = inp.Split(';');
                         tag = temp[0];
-                        cat = temp[1];
+                        cat = temp[3];
                         foreach (char item in tag)
                         {
                             //Отделя се буквената част от индентификационния номер
@@ -194,9 +194,9 @@ namespace Ekatte
                         inp = s.ReadLine();
                         var temp = inp.Split(';');
                         ekatte = temp[0];
-                        name = temp[1];
-                        tag = temp[2];
-                        cat = temp[3];
+                        name = temp[2];
+                        tag = temp[5];
+                        cat = temp[7];
                         //някой записи в файла имат идентификационен номер на кметството завършващ на 00
                         //тези записи са невалидни тъй като няма кметства с такива номера
                         if (!tag.Contains("00"))
