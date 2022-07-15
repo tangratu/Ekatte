@@ -17,6 +17,8 @@ namespace Ekatte
         {
 
         }
+        //Метод за получаване на броя записи в CSV файл
+        //Използва се за валидиране на броя записи в базата данни спрямо броя записи във файла
         int getrealcount(string file)
         {
             int count = 0;
@@ -32,40 +34,53 @@ namespace Ekatte
         }
         protected void Button1_Click(object sender, EventArgs e)
         {
+            //за броене на елементите на БД
+            int obl_c=0, obsh_c=0, km_c=0, ek_c=0; 
+            //Свързване с базата данни
             MySqlConnection con = new MySqlConnection("Data Source=localhost;Database=ekatte;User ID=root;Password=Tangratu");
             con.Open();
             using (StreamReader s = new StreamReader("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\ekatte_obl.csv", Encoding.GetEncoding(1251)))
-            {
+            { 
                 string check = "SELECT COUNT(*) FROM oblast";
-                
+                //Проверка за вече съществуващи данни
                 MySqlCommand ch = new MySqlCommand(check, con);
+                //Броят записи в БД
                 int lines = int.Parse(ch.ExecuteScalar().ToString());
+                //Ако броят записи е еднакъв във файла и БД значи всичко е записано и трябва да записва отново
                 if (lines != getrealcount("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\ekatte_obl.csv"))
                 {
+
                     if(lines > 0)
                     {
+                        //Ако броят записи във БД е различен от този във файл, но не е нулев значи има някаква грешка
+                        //Всички записи в БД се изтриват
                         new MySqlCommand("DELETE FROM oblast", con).ExecuteNonQuery();
                     }
 
                     string tag, name, inp;
-                    s.ReadLine();
+                    s.ReadLine(); //Прескачане на header частта от файла
                     while (!s.EndOfStream)
                     {
+                        //Чете по редове, разделя на отделни стойности
                         inp = s.ReadLine();
                         var temp = inp.Split(';');
                         tag = temp[0];
                         name = temp[1];
+                        //Записва стойности в БД
                         string ins_qry =
                             "INSERT INTO oblast (tag,name) VALUES (@tag,@name)";
                         MySqlCommand com = new MySqlCommand(ins_qry, con);
                         com.Parameters.AddWithValue("@tag", tag);
                         com.Parameters.AddWithValue("@name", name);
                         com.ExecuteNonQuery();
+                        obl_c++;
                     }
                 }
+                else { obl_c = lines; }
             }
             using (StreamReader s = new StreamReader("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\Ek_obst.csv", Encoding.GetEncoding(1251)))
             {
+                //Същата проверка като горе
                 string check = "SELECT COUNT(*) FROM obshtina";
                 MySqlCommand ch = new MySqlCommand(check, con);
                 int lines = int.Parse(ch.ExecuteScalar().ToString());
@@ -81,19 +96,23 @@ namespace Ekatte
                     s.ReadLine();
                     while (!s.EndOfStream)
                     {
-                        id = "";
+
+                        id = ""; //Тук се записва трибуквеното съкращение извелечено от идентификационния номер на общината
+                        //Чрез това съкращение се намира съответната област и се взима нейния id за foreign key полето
                         inp = s.ReadLine();
                         var temp = inp.Split(';');
                         tag = temp[0];
                         cat = temp[1];
                         foreach (char item in tag)
                         {
+                            //Отделя се буквената част от индентификационния номер
                             if (Char.IsDigit(item))
                             {
                                 break;
                             }
                             id += item;
                         }
+                        //Този query взима id на областта съответстваща на общината
                         string getid = "SELECT id FROM oblast WHERE tag = '" + id + "'";
                         MySqlCommand idied = new MySqlCommand(getid, con);
                         string ins_qry =
@@ -103,8 +122,10 @@ namespace Ekatte
                         com.Parameters.AddWithValue("@idobl", idied.ExecuteScalar().ToString());
                         com.Parameters.AddWithValue("@tag", tag);
                         com.ExecuteNonQuery();
+                        obsh_c++;
                     }
                 }
+                else { obsh_c = lines; }
             }
             using (StreamReader s = new StreamReader("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\Ek_kmet.csv", Encoding.GetEncoding(1251)))
             {
@@ -130,6 +151,8 @@ namespace Ekatte
                         tag = temp[0];                        
                         foreach (char item in tag)
                         {
+                            //Тук се чете пълния индентификационен номер на общината, който се намира преди тирето
+                            //С него се достига id на общината, в която е кметството
                             if (item == '-')
                             {
                                 break;
@@ -144,11 +167,15 @@ namespace Ekatte
                         com.Parameters.AddWithValue("@idobsh", idied.ExecuteScalar().ToString());
                         com.Parameters.AddWithValue("@tag", tag);
                         com.ExecuteNonQuery();
+                        km_c++;
                     }
                 }
+                else { km_c = lines; }
             }
             using (StreamReader s = new StreamReader("C:\\Users\\Anton\\source\\repos\\Ekatte\\Ekatte\\Ek_atte.csv", Encoding.GetEncoding(1251)))
             {
+                //Поради неточности във файла Ek_atte тук проверка като горните не е възможна
+                //Прави се проста проверка дали БД е празно
                 string check = "SELECT COUNT(*) FROM ekatte";
                 MySqlCommand ch = new MySqlCommand(check, con);
                 int lines = int.Parse(ch.ExecuteScalar().ToString());
@@ -158,6 +185,7 @@ namespace Ekatte
 
 
                     string name, ekatte, cat,inp, tag;
+                    //Тук първите два реда не съдържат информация
                     s.ReadLine();
                     s.ReadLine();
                     while (!s.EndOfStream)
@@ -169,6 +197,8 @@ namespace Ekatte
                         name = temp[1];
                         tag = temp[2];
                         cat = temp[3];
+                        //някой записи в файла имат идентификационен номер на кметството завършващ на 00
+                        //тези записи са невалидни тъй като няма кметства с такива номера
                         if (!tag.Contains("00"))
                         {
 
@@ -183,20 +213,28 @@ namespace Ekatte
                             com.Parameters.AddWithValue("@cat", cat);
                             com.Parameters.AddWithValue("@idkm", idied.ExecuteScalar().ToString());
                             com.ExecuteNonQuery();
+                            ek_c++;
                         }
                     }
                 }
+                else { ek_c = lines; }
             }
             con.Close();
+            //Скрива се бутона за вкарване на данни, показва се текстово поле и бутон за търсене
             Tb_search.Visible = true;
             Bt_search.Visible = true;
-            Bt_import.Visible = false;
+            Bt_import.Visible = false;            
+            Lb_obl.Text = obl_c.ToString();
+            Lb_obsh.Text = obsh_c.ToString();
+            Lb_km.Text = km_c.ToString();
+            Lb_ek.Text = ek_c.ToString();
         }
 
         protected void Bt_search_Click(object sender, EventArgs e)
         {
             MySqlConnection con = new MySqlConnection("Data Source=localhost;Database=ekatte;User ID=root;Password=Tangratu");
             con.Open();
+            //Извличат се данни за всички градове с имена започващи с това записано в полето
             string search = "SELECT * FROM ekatte WHERE name LIKE '" + Tb_search.Text + "%" + "'";
             MySqlDataAdapter mda = new MySqlDataAdapter(search, con);
             DataTable dt = new DataTable();

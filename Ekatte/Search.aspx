@@ -28,7 +28,15 @@
                 <asp:BoundField DataField="idkm" HeaderText="Township ID" />
                     </Columns>
             </asp:GridView>
+            <br />
+            <br />
+            <asp:Label ID="Lb_obl" runat="server"></asp:Label>
+&nbsp;&nbsp;
+            <asp:Label ID="Lb_obsh" runat="server"></asp:Label>
 &nbsp;&nbsp;&nbsp;
+            <asp:Label ID="Lb_km" runat="server"></asp:Label>
+&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:Label ID="Lb_ek" runat="server"></asp:Label>
         </div>
     </form>
 </body>
