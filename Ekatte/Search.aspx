@@ -21,22 +21,22 @@
             <asp:Button ID="Bt_search" runat="server" Text="Search" Visible="False" OnClick="Bt_search_Click" />
             <asp:GridView ID="GV_ek" runat="server" AutoGenerateColumns="False" HorizontalAlign="Center">
                 <Columns>
-                <asp:BoundField DataField="id" HeaderText="ID" />
-                <asp:BoundField DataField="name" HeaderText="Name" />
-                <asp:BoundField DataField="ekatte" HeaderText="Ekatte" />
-                <asp:BoundField DataField="cat" HeaderText="Category" />
-                <asp:BoundField DataField="idkm" HeaderText="Township ID" />
+                <asp:BoundField DataField="name" HeaderText="Име" />
+                <asp:BoundField DataField="ekatte" HeaderText="Екате" />
+                <asp:BoundField DataField="kmetstvo" HeaderText="Кметство" />
+                <asp:BoundField DataField="obshtina" HeaderText="Община" />
+                <asp:BoundField DataField="oblast" HeaderText="Област" />
                     </Columns>
             </asp:GridView>
             <br />
             <br />
-            <asp:Label ID="Lb_obl" runat="server"></asp:Label>
+            <asp:Label ID="Lb_obl" runat="server">Области: </asp:Label>
 &nbsp;&nbsp;
-            <asp:Label ID="Lb_obsh" runat="server"></asp:Label>
+            <asp:Label ID="Lb_obsh" runat="server">Общини: </asp:Label>
 &nbsp;&nbsp;&nbsp;
-            <asp:Label ID="Lb_km" runat="server"></asp:Label>
+            <asp:Label ID="Lb_km" runat="server">Кметства: </asp:Label>
 &nbsp;&nbsp;&nbsp;&nbsp;
-            <asp:Label ID="Lb_ek" runat="server"></asp:Label>
+            <asp:Label ID="Lb_ek" runat="server">ЕКАТЕ: </asp:Label>
         </div>
     </form>
 </body>
